@@ -1,13 +1,13 @@
-name: pull request status check work flow
+# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
 
-# Controls when the workflow will run
+name: Java CI with Maven
+
 on:
-  # Triggers the workflow on pull request events but only for the main branch
+  push:
+    branches: [ main ]
   pull_request:
     branches: [ main ]
-
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
