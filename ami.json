@@ -6,17 +6,16 @@
         "aws_region": "us-west-2",
         "source_ami":"ami-0b9f27b05e1de14e9",
         "vpc_id": "vpc-0a1bc3b3614852d58",
-        "REMOTE_AWS_ACCOUNT_ID": "451421159665",
         "subnet_id": "subnet-006974e3e606c4f14",
         "security_group_id": "sg-074deb7ceb74655d7"
       },
     "builders": [{
       "type": "amazon-ebs",
-      "ami_users": "{{ user `REMOTE_AWS_ACCOUNT_ID`}}",
       "access_key": "{{user `aws_access_key`}}",
       "secret_key": "{{user `aws_secret_key`}}",
       "region": "{{user `aws_region`}}",
       "source_ami": "{{user `source_ami`}}",
+      "ami_users": ["739753035795","451421159665"],
       "instance_type": "t2.micro",
       "ssh_username": "ec2-user",
       "ami_name": "csye6225_fall_2021_{{timestamp}}",
@@ -24,7 +23,7 @@
 
       "launch_block_device_mappings":[{
         "device_name": "/dev/xvda",
-        "volume_size" :8,
+        "volume_size" : 20,
         "volume_type" : "gp2",
         "delete_on_termination" :true
       }

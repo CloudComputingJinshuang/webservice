@@ -1,10 +1,8 @@
 sudo yum upgrade -y
 sudo yum update -y
-sudo yum install -y java-1.8.0-openjdk
+sudo yum install -y java-17.0.2-openjdk
 sudo yum install -y tomcat
-sudo yum install maven
-sudo chkconfig tomcat on
-sudo service tomcat start
+sudo yum install -y maven
 rpm --import https://repo.mysql.com/RPM-GPG-KEY-mysql-2022
 sudo wget https://dev.mysql.com/get/mysql57-community-release-el7-11.noarch.rpm
 sudo yum localinstall mysql57-community-release-el7-11.noarch.rpm -y
