@@ -54,7 +54,7 @@ public class UserController {
     }
 
     @PostMapping("/v1/user")
-    public void createUser(@Valid @RequestBody User providedUser) {
+    public User createUser(@Valid @RequestBody User providedUser) {
         Pattern pattern = Pattern.compile("[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}");
         Matcher mat = pattern.matcher(providedUser.getEmailAddress());
         if (!mat.matches()) {
@@ -65,7 +65,7 @@ public class UserController {
         }
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         providedUser.setPassword(bCryptPasswordEncoder.encode(providedUser.getPassword()));
-        userRepository.save(providedUser);
+        return userRepository.save(providedUser);
     }
 
     @PutMapping("/v1/user/self")
