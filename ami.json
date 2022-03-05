@@ -1,0 +1,53 @@
+{
+    "variables": {
+        "aws_access_key": "AKIA2YPFXRAJQ2L6RW5A",
+        "aws_secret_key": "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",
+        "name": "{{timestamp}}",
+        "aws_region": "us-west-2",
+        "source_ami":"ami-0b9f27b05e1de14e9",
+        "vpc_id": "vpc-0a1bc3b3614852d58",
+        "REMOTE_AWS_ACCOUNT_ID": "451421159665",
+        "subnet_id": "subnet-006974e3e606c4f14",
+        "security_group_id": "sg-074deb7ceb74655d7"
+      },
+    "builders": [{
+      "type": "amazon-ebs",
+      "ami_users": "{{ user `REMOTE_AWS_ACCOUNT_ID`}}",
+      "access_key": "{{user `aws_access_key`}}",
+      "secret_key": "{{user `aws_secret_key`}}",
+      "region": "{{user `aws_region`}}",
+      "source_ami": "{{user `source_ami`}}",
+      "instance_type": "t2.micro",
+      "ssh_username": "ec2-user",
+      "ami_name": "csye6225_fall_2021_{{timestamp}}",
+      "ami_description": "AMi for csye6225",
+
+      "launch_block_device_mappings":[{
+        "device_name": "/dev/xvda",
+        "volume_size" :8,
+        "volume_type" : "gp2",
+        "delete_on_termination" :true
+      }
+      
+      ],
+      
+      "associate_public_ip_address": false,
+      "tags": {
+        "Name": "{{user `name`}}"
+      }
+    }],
+    "provisioners": [{
+      "type": "shell",
+      "scripts": [
+        "scripts/base.sh"
+      ],
+      "execute_command": "{{ .Vars }} sudo -E sh '{{ .Path }}'",
+      "pause_before": "10s"
+    },
+    {
+      "type": "file",
+      "source": "{{template_dir}}/",
+      "destination": "/tmp/"
+    }]
+  }
+
