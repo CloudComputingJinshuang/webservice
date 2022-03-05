@@ -9,3 +9,4 @@
    2) run WebserivceApiApplication class 
    3) open browser with link localhost:8080/healthz check the same url with postman, if the status is 200, then the application run successfully
    4) for testing 
+   5) test
