@@ -19,7 +19,7 @@ jobs:
     env:
       DB_DATABASE: database4
       DB_USER: root
-      DB_PASSWORD: Njs862459063
+      DB_PASSWORD: root
     steps:
       - name: Start mysql service
         run: |
