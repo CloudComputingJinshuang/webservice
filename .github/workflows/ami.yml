@@ -16,10 +16,15 @@ jobs:
   packer_build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-      - name: Packer build
-        uses: ExitoLab/packer_build_action_aws@v0.2.10
-        with:
-          templateFile: 'ami.json'
+      - name: Checkout repository
+        uses: actions/checkout@v2.3.3
+      - name: build with maven
+        run: mvn -B package --file pom.xml
+      - name: package
+        run: mvn package
+      - name: check file 
+        run: ls -al target 
+      - name: Build ami
+        run: PACKER_LOG=1 packer build ami.json
 
 
