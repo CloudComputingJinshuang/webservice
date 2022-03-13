@@ -1,22 +1,22 @@
 package com.example.demo.controller;
 
+import com.example.demo.AWSS3Service;
 import com.example.demo.GetSelf;
 import com.example.demo.User;
 import com.example.demo.exception.EmailExistException;
 import com.example.demo.exception.NotValidEmailException;
 import com.example.demo.repository.UserRepository;
-import org.apache.coyote.Response;
-import org.apache.velocity.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
-import java.util.List;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,8 +27,7 @@ public class UserController {
     private PasswordEncoder passwordEncoder;
     @Autowired
     UserRepository userRepository;
-//    @Autowired
-//    PasswordEncoder passwordEncoder;
+
 
     @GetMapping("/healthz")
     public String test () {
@@ -39,16 +38,13 @@ public class UserController {
     public GetSelf getUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User userData = userRepository.findByEmailAddress(auth.getName());
-
         GetSelf getSelf = new GetSelf();
-
         getSelf.setId(userData.getId());
         getSelf.setUsername(userData.getEmailAddress());
         getSelf.setFirst_name(userData.getFirstName());
         getSelf.setLast_name(userData.getLastName());
         getSelf.setAccount_created(userData.getAccount_created());
         getSelf.setAccount_updated(userData.getAccount_updated());
-
         return getSelf;
 //        return userData;
     }
@@ -79,4 +75,5 @@ public class UserController {
         userData.setPassword(passwordEncoder.encode(userDetails.getPassword()));
         return userRepository.save(userData);
     }
+
 }

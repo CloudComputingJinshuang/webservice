@@ -34,6 +34,7 @@ public class User implements Serializable {
     private String firstName;
     @NotBlank
     private String lastName;
+
     @Column(nullable = false, updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
     @CreatedDate
@@ -44,16 +45,10 @@ public class User implements Serializable {
     @LastModifiedDate
     private Date account_updated;
 
-//    @JsonIgnore
+
     public String getPassword() {
         return password;
     }
-//    @JsonIgnore
-    public void setPassword (String password) {
-        this.password = password;
-    }
-
-    public User() {}
 
     public String getId() {
         return id;
@@ -62,6 +57,13 @@ public class User implements Serializable {
     public void setId(String id) {
         this.id = id;
     }
+
+    public void setPassword (String password) {
+        this.password = password;
+    }
+
+    public User() {}
+
 
     public String getEmailAddress() {
         return emailAddress;
@@ -87,7 +89,6 @@ public class User implements Serializable {
         this.lastName = lastName;
     }
 
-//    @JsonIgnore
     public Date getAccount_created() {
         return account_created;
     }
@@ -96,7 +97,6 @@ public class User implements Serializable {
         this.account_created = account_created;
     }
 
-//    @JsonIgnore
     public Date getAccount_updated() {
         return account_updated;
     }
