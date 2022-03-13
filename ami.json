@@ -45,7 +45,7 @@
     },
     {
       "type": "file",
-      "source": "/home/runner/work/webservice1/webservice1/target/demo1-0.0.1-SNAPSHOT.jar",
+      "source": "/home/runner/work/webservice/webservice/target/demo1-0.0.1-SNAPSHOT.jar",
       "destination": "/tmp/demo1-0.0.1-SNAPSHOT.jar"
     }]
   }
