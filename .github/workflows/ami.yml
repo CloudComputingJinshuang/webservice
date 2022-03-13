@@ -4,8 +4,6 @@
 name: CI to build AMI
 
 on:
-  push:
-    branches: [ main ]
   pull_request:
     branches: [ main ]
     types: [closed]
