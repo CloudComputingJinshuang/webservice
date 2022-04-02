@@ -1,34 +1,41 @@
-# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
-# https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
-
-name: CI to build AMI
-
-env:
-  ARTIFACT_NAME: csye6225-web-${{ github.sha }}.zip
-  CODEDEPLOY_APPLICATION_NAME: csye6225-webapp
-  CODEDEPLOY_APPLICATION_DEPLOYMENT_GROUP_NAME: csye6225-webapp-deployment
-  AWS_REGION: us-west-2
+name: Build & Deploy 
 
 on:
   pull_request:
-    branches: [main]
+    branches: [ main ]
     types: [closed]
+
+env:
+  ARTIFACT_NAME: csye6225-webapp-${{github.sha}}.zip    
+  AWS_REGION: us-west-2                   
+  CODEDEPLOY_APPLICATION_NAME: csye6225-webapp           
+  CODEDEPLOY_APPLICATION_DEPLOYMENT_GROUP_NAME: csye6225-webapp-deployment  
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  packer_build:
+  ci_cd:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2.3.3
+      - uses: actions/checkout@v2
+          
       - name: build with maven
         run: mvn -B package --file pom.xml
+        
+#       - name: package
+#         run: mvn package
+
       - name: package
-        run: mvn package
-      - name: check file
-        run: ls -al target
-      # - name: Build ami
-      #   run: PACKER_LOG=1 packer build ami.json
+        run: |
+          echo "${{ env.ARTIFACT_NAME }}"
+          pwd
+          mvn clean install
+          pwd
+          ls -al target
+
+#       - name: Build ami
+#         run: PACKER_LOG=1 packer build ami.json
+
       - name: Build Deployment Artifact
         run: |
           mkdir codedeploy_artifact
@@ -44,15 +51,21 @@ jobs:
           cd ..
           pwd
           ls -al
+#          sudo apt-get update -y
+#          sudo apt-get install awscli -y
+#          aws --version
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: AKIAWSGWMIDYWZ5I3IGY
           aws-secret-access-key: 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
           aws-region: ${{ env.AWS_REGION }}
+
       - name: Copy Artifact to S3
         run: |
           aws s3 sync ./codedeploy_artifact s3://jinshuangbucket
+
       - name: CodeDeploy API call
         run: |
           output=$(aws deploy create-deployment \
