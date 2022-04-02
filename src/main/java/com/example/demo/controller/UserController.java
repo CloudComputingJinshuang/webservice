@@ -34,7 +34,7 @@ public class UserController {
         return "";
     }
 
-    @GetMapping("/v1/user/self")
+    @GetMapping("/v2/user/self")
     public GetSelf getUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User userData = userRepository.findByEmailAddress(auth.getName());
@@ -49,7 +49,7 @@ public class UserController {
 //        return userData;
     }
 
-    @PostMapping("/v1/user")
+    @PostMapping("/v2/user")
     public User createUser(@Valid @RequestBody User providedUser) {
         Pattern pattern = Pattern.compile("[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}");
         Matcher mat = pattern.matcher(providedUser.getEmailAddress());
@@ -64,7 +64,7 @@ public class UserController {
         return userRepository.save(providedUser);
     }
 
-    @PutMapping("/v1/user/self")
+    @PutMapping("/v2/user/self")
     public User updateUser(@Valid @RequestBody User userDetails) {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
