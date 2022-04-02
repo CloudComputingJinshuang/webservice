@@ -26,7 +26,7 @@ public class ImageController {
     @Value("${aws.s3.bucket}")
     public String bucketName;
 
-    @PostMapping(value= "/v2/user/self/pic")
+    @PostMapping(value= "/v1/user/self/pic")
     public Image uploadFile(@RequestPart(value= "file") final MultipartFile multipartFile) {
         Image image = new Image();
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -46,7 +46,7 @@ public class ImageController {
         return imageRepository.save(image);
     }
 
-    @GetMapping (value= "/v2/user/self/pic")
+    @GetMapping (value= "/v1/user/self/pic")
     public Image getImage () {
         Image image = new Image();
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -56,7 +56,7 @@ public class ImageController {
         return image;
     }
 
-    @DeleteMapping (value= "/v2/user/self/pic")
+    @DeleteMapping (value= "/v1/user/self/pic")
     public void deletePic () {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User userData = userRepository.findByEmailAddress(auth.getName());
