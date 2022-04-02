@@ -12,3 +12,12 @@ pwd=`sudo grep 'temporary password' /var/log/mysqld.log | rev | cut -d':' -f 1 |
 mysql -uroot -p$pwd --connect-expired-password -e "Alter user 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'Njs862459063!'"
 sudo service mysqld restart
 mysql -uroot -pNjs862459063! -e "CREATE DATABASE IF NOT EXISTS database4"
+
+sudo yum install ruby -y
+sudo yum install wget
+cd /home/ec2-user
+wget https://aws-codedeploy-us-east-2.s3.us-east-2.amazonaws.com/latest/install
+chmod +x ./install
+sudo ./install auto
+sudo service codedeploy-agent status
+sudo service codedeploy-agent start
