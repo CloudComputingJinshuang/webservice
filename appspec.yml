@@ -1,16 +1,18 @@
-version: 0.0 
-os: linux 
-files: 
+version: 0.0
+os: linux
+
+files:
   - source: ./target/demo1-0.0.1-SNAPSHOT.jar
     destination: /tmp
 file_exists_behavior: OVERWRITE
-hooks: 
-  AfterInstall: 
-    - location: ./codedeploy/afterInstall.sh 
-      timeout: 240
-  ApplicationStart:
+
+hooks:
+  AfterInstall:
+    - location: ./codedeploy/afterInstall.sh
+      timeout: 180
+  ApplicationStar:
     - location: ./codedeploy/applicationStart.sh
-      timeout: 240
-  BeforeInstall:
+      timeout: 180
+  ApplicationStop:
     - location: ./codedeploy/beforeInstall.sh
-      timeout: 240
+      timeout: 180
