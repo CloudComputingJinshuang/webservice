@@ -29,7 +29,7 @@ public class UserController {
     UserRepository userRepository;
 
 
-    @GetMapping("/health")
+    @GetMapping("/healthz")
     public String test () {
         return "";
     }
