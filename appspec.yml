@@ -1,0 +1,19 @@
+version: 0.0 
+os: linux 
+files: 
+  - source: ./target/demo1-0.0.1-SNAPSHOT.jar
+    destination: /tmp
+file_exists_behavior: OVERWRITE
+hooks: 
+  AfterInstall: 
+    - location: ./codedeploy/afterInstall.sh 
+      timeout: 60 
+      runas: ubuntu
+  ApplicationStart:
+    - location: ./codedeploy/applicationStart.sh
+      timeout: 60 
+      runas: ubuntu
+  BeforeInstall:
+    - location: ./codedeploy/beforeInstall.sh
+      timeout: 60 
+      runas: ubuntu
