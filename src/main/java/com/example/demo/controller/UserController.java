@@ -31,7 +31,7 @@ public class UserController {
 
     @GetMapping("/healthz")
     public String test () {
-        return "";
+        return "hjahfahah";
     }
 
     @GetMapping("/v1/user/self")
