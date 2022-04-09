@@ -56,7 +56,7 @@ public class UserController {
             logger.error(e.getMessage());
         }
         logger.info(jsonObject.toString());
-        return "";
+        return "demo 7/8";
     }
 
     @GetMapping("/v2/user/self")
