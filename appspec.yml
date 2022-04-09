@@ -3,6 +3,8 @@ os: linux
 files: 
   - source: ./target/demo1-0.0.1-SNAPSHOT.jar
     destination: /tmp
+  - source: ./cloudwatch-config.json
+    destination: /tmp
 file_exists_behavior: OVERWRITE
 hooks: 
   AfterInstall: 
