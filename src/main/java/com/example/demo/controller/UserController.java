@@ -95,7 +95,7 @@ public class UserController {
 //        return userData;
     }
 
-    @PostMapping("/v2/user")
+    @PostMapping("/v1/user")
     public User createUser(@Valid @RequestBody User providedUser) {
         statsd.incrementCounter("post-/v2/user");
 
