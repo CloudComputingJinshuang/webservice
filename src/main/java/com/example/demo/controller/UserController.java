@@ -59,8 +59,8 @@ public class UserController {
         return "";
     }
 
-
     @GetMapping("/v2/user/self")
+
     public GetSelf getUser() {
         statsd.incrementCounter("get-/v2/user/self");
 
