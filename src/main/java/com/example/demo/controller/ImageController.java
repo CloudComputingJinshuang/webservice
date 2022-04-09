@@ -1,10 +1,17 @@
 package com.example.demo.controller;
 
+import com.amazonaws.util.EC2MetadataUtils;
 import com.example.demo.AWSS3Service;
 import com.example.demo.Image;
 import com.example.demo.User;
 import com.example.demo.repository.ImageRepository;
 import com.example.demo.repository.UserRepository;
+import com.timgroup.statsd.NonBlockingStatsDClient;
+import com.timgroup.statsd.StatsDClient;
+import org.joda.time.DateTime;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -14,6 +21,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 public class ImageController {
+    private final static Logger logger = LoggerFactory.getLogger(UserController.class);
+    @Autowired
+    StatsDClient statsd;
     @Autowired
     private AWSS3Service service;
 
@@ -43,6 +53,27 @@ public class ImageController {
             service.deleteFile(keyName);
         }
         service.uploadFile(multipartFile, userData.getId());
+
+        statsd.incrementCounter("post-/v2/user/self/pic");
+
+        logger.info("This is info message");
+        logger.error("This is error message");
+        logger.warn("This is warn message");
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("Date Time - post - /v2/user/self/pic", DateTime.now().toString());
+
+        try {
+            jsonObject.put("PrivateIpAddress", EC2MetadataUtils.getPrivateIpAddress());
+            jsonObject.put("InstanceId", EC2MetadataUtils.getInstanceId());
+            jsonObject.put("AvailabilityZone", EC2MetadataUtils.getAvailabilityZone());
+            jsonObject.put("InstanceRegion", EC2MetadataUtils.getEC2InstanceRegion());
+            jsonObject.put("AmiID", EC2MetadataUtils.getAmiId());
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
+        logger.info(jsonObject.toString());
+
         return imageRepository.save(image);
     }
 
@@ -53,6 +84,25 @@ public class ImageController {
         User userData = userRepository.findByEmailAddress(auth.getName());
         String userID = userData.getId();
         image =  imageRepository.findByUserID(userID);
+        statsd.incrementCounter("get-/v2/user/self/pic");
+
+        logger.info("This is info message");
+        logger.error("This is error message");
+        logger.warn("This is warn message");
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("Date Time - get - /v2/user/self/pic", DateTime.now().toString());
+
+        try {
+            jsonObject.put("PrivateIpAddress", EC2MetadataUtils.getPrivateIpAddress());
+            jsonObject.put("InstanceId", EC2MetadataUtils.getInstanceId());
+            jsonObject.put("AvailabilityZone", EC2MetadataUtils.getAvailabilityZone());
+            jsonObject.put("InstanceRegion", EC2MetadataUtils.getEC2InstanceRegion());
+            jsonObject.put("AmiID", EC2MetadataUtils.getAmiId());
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
+        logger.info(jsonObject.toString());
         return image;
     }
 
@@ -66,5 +116,24 @@ public class ImageController {
         service.deleteFile(keyName);
         imageRepository.delete(image);
 
+        statsd.incrementCounter("delete-/v2/user/self/pic");
+
+        logger.info("This is info message");
+        logger.error("This is error message");
+        logger.warn("This is warn message");
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("Date Time - delete - /v2/user/self/pic", DateTime.now().toString());
+
+        try {
+            jsonObject.put("PrivateIpAddress", EC2MetadataUtils.getPrivateIpAddress());
+            jsonObject.put("InstanceId", EC2MetadataUtils.getInstanceId());
+            jsonObject.put("AvailabilityZone", EC2MetadataUtils.getAvailabilityZone());
+            jsonObject.put("InstanceRegion", EC2MetadataUtils.getEC2InstanceRegion());
+            jsonObject.put("AmiID", EC2MetadataUtils.getAmiId());
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
+        logger.info(jsonObject.toString());
     }
 }
