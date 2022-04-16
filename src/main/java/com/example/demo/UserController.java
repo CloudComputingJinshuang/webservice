@@ -14,6 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -157,13 +159,17 @@ public class UserController {
 
     @GetMapping(value = "/v1/verifyUserEmail")
     @ResponseBody
-    public void verifyUser(@RequestParam String email,
-                           @RequestParam String token){
+    public ResponseEntity verifyUser(@RequestParam String email,
+                                     @RequestParam String token){
         User userData = userRepository.findByEmailAddress(email);
         Map<String,AttributeValue> queryItem = dynamoService.getDynamoDBItem("email",email);
-        if (queryItem==null) return;
+        if (queryItem.size()==0) {
+            return new ResponseEntity(String.format("Not in dynamo"), HttpStatus.NOT_FOUND);
+        }
         userData.setVerified(true);
         userRepository.save(userData);
+        return new ResponseEntity(String.format("Account Verified"),HttpStatus.OK);
+
     }
 
     @PutMapping("/v2/user/self")
