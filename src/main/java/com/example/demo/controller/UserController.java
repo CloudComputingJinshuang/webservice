@@ -1,30 +1,54 @@
 package com.example.demo.controller;
 
+import antlr.Token;
+import com.amazonaws.internal.StaticCredentialsProvider;
+import com.amazonaws.regions.Region;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
+import com.amazonaws.services.dynamodbv2.document.DynamoDB;
+import com.amazonaws.services.dynamodbv2.document.Item;
+import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.util.EC2MetadataUtils;
-import com.example.demo.GetSelf;
-import com.example.demo.User;
+import com.example.demo.*;
 import com.example.demo.exception.EmailExistException;
 import com.example.demo.exception.NotValidEmailException;
 import com.example.demo.repository.UserRepository;
+import com.google.gson.Gson;
 import com.timgroup.statsd.NonBlockingStatsDClient;
 import com.timgroup.statsd.StatsDClient;
+import org.apache.commons.lang.RandomStringUtils;
 import org.joda.time.DateTime;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 import javax.validation.Valid;
+import java.util.HashMap;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @RestController
 public class UserController {
+    @Autowired
+    private SNSUtil snsUtil;
+    @Value("${aws.access_key_id}")
+    private String accessKeyId;
+    // Secret access key will be read from the application.properties file during the application intialization.
+    @Value("${aws.secret_access_key}")
+    private String secretAccessKey;
+
+    @Autowired
+    DynamoService dynamoService;
 
     private final static Logger logger = LoggerFactory.getLogger(UserController.class);
     @Autowired
@@ -60,7 +84,6 @@ public class UserController {
     }
 
     @GetMapping("/v2/user/self")
-
     public GetSelf getUser() {
         statsd.incrementCounter("get-/v2/user/self");
 
@@ -84,6 +107,9 @@ public class UserController {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User userData = userRepository.findByEmailAddress(auth.getName());
+        if (!userData.isVerified()) {
+            throw new NotValidEmailException();
+        }
         GetSelf getSelf = new GetSelf();
         getSelf.setId(userData.getId());
         getSelf.setUsername(userData.getEmailAddress());
@@ -126,7 +152,25 @@ public class UserController {
         }
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         providedUser.setPassword(bCryptPasswordEncoder.encode(providedUser.getPassword()));
+
+        String token = RandomStringUtils.random(8,true,true);
+        dynamoService.putItemInTable("email",providedUser.getEmailAddress(),"token", token);
+        Message message = new Message();
+        message.setEmail(providedUser.getEmailAddress());
+        message.setToken(token);
+        String link = "http://prod.csye6225jinshuang.me/v1/verifyUserEmail?email="+ providedUser.getEmailAddress()+"&token="+token;
+        message.setLink(link);
+        this.snsUtil.publishSNSMessage(new Gson().toJson(message));
         return userRepository.save(providedUser);
+    }
+
+    @GetMapping(value = "http://prod.csye6225jinshuang.me/v1/verifyUserEmail?email={email}&token={token}")
+    public void verifyUser(@PathVariable("email") String email, @PathVariable("token") String token){
+        User userData = userRepository.findByEmailAddress(email);
+        HashMap<String,AttributeValue> queryItem = (HashMap<String, AttributeValue>) dynamoService.getDynamoDBItem("email",email);
+        if (queryItem==null) return;
+        userData.setVerified(true);
+        userRepository.save(userData);
     }
 
     @PutMapping("/v2/user/self")
@@ -134,6 +178,10 @@ public class UserController {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User userData = userRepository.findByEmailAddress(auth.getName());
+
+        if (!userData.isVerified()) {
+            throw new NotValidEmailException();
+        }
 
         userData.setFirstName(userDetails.getFirstName());
         userData.setLastName(userDetails.getLastName());
