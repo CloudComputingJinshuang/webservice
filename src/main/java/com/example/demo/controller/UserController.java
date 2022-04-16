@@ -167,8 +167,9 @@ public class UserController {
         return userRepository.save(providedUser);
     }
 
-    @GetMapping(value = "/v1/verifyUserEmail?email={email}&token={token}")
-    public void verifyUser(@PathVariable("email") String email, @PathVariable("token") String token){
+    @GetMapping(value = "/v1/verifyUserEmail")
+    public void verifyUser(@RequestParam String email,
+                           @RequestParam String token){
         User userData = userRepository.findByEmailAddress(email);
         HashMap<String,AttributeValue> queryItem = (HashMap<String, AttributeValue>) dynamoService.getDynamoDBItem("email",email);
         if (queryItem==null) return;
