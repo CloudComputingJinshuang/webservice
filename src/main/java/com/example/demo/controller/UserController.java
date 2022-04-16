@@ -13,6 +13,7 @@ import com.amazonaws.util.EC2MetadataUtils;
 import com.example.demo.*;
 import com.example.demo.exception.EmailExistException;
 import com.example.demo.exception.NotValidEmailException;
+import com.example.demo.exception.NotVerifyException;
 import com.example.demo.repository.UserRepository;
 import com.google.gson.Gson;
 import com.timgroup.statsd.NonBlockingStatsDClient;
@@ -108,7 +109,7 @@ public class UserController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User userData = userRepository.findByEmailAddress(auth.getName());
         if (!userData.isVerified()) {
-            throw new NotValidEmailException();
+            throw new NotVerifyException();
         }
         GetSelf getSelf = new GetSelf();
         getSelf.setId(userData.getId());
@@ -144,12 +145,12 @@ public class UserController {
         logger.info(jsonObject.toString());
         Pattern pattern = Pattern.compile("[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}");
         Matcher mat = pattern.matcher(providedUser.getEmailAddress());
-        if (!mat.matches()) {
-            throw new NotValidEmailException();
-        }
-        if (userRepository.findByEmailAddress(providedUser.getEmailAddress())!=null) {
-            throw new EmailExistException();
-        }
+//        if (!mat.matches()) {
+//            throw new NotValidEmailException();
+//        }
+//        if (userRepository.findByEmailAddress(providedUser.getEmailAddress())!=null) {
+//            throw new EmailExistException();
+//        }
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         providedUser.setPassword(bCryptPasswordEncoder.encode(providedUser.getPassword()));
 
@@ -180,7 +181,7 @@ public class UserController {
         User userData = userRepository.findByEmailAddress(auth.getName());
 
         if (!userData.isVerified()) {
-            throw new NotValidEmailException();
+            throw new NotVerifyException();
         }
 
         userData.setFirstName(userDetails.getFirstName());

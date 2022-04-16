@@ -5,6 +5,7 @@ import com.example.demo.AWSS3Service;
 import com.example.demo.Image;
 import com.example.demo.User;
 import com.example.demo.exception.NotValidEmailException;
+import com.example.demo.exception.NotVerifyException;
 import com.example.demo.repository.ImageRepository;
 import com.example.demo.repository.UserRepository;
 import com.timgroup.statsd.NonBlockingStatsDClient;
@@ -43,7 +44,7 @@ public class ImageController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User userData = userRepository.findByEmailAddress(auth.getName());
         if (!userData.isVerified()) {
-            throw new NotValidEmailException();
+            throw new NotVerifyException();
         }
         String fileName = multipartFile.getOriginalFilename();
         String url = "https://s3.us-west-2.amazonaws.com/" + bucketName + "/" + userData.getId() + "/"+ multipartFile.getOriginalFilename();
@@ -87,7 +88,7 @@ public class ImageController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User userData = userRepository.findByEmailAddress(auth.getName());
         if (!userData.isVerified()) {
-            throw new NotValidEmailException();
+            throw new NotVerifyException();
         }
         String userID = userData.getId();
         image =  imageRepository.findByUserID(userID);
@@ -118,7 +119,7 @@ public class ImageController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User userData = userRepository.findByEmailAddress(auth.getName());
         if (!userData.isVerified()) {
-            throw new NotValidEmailException();
+            throw new NotVerifyException();
         }
         Image image = imageRepository.findByUserID(userData.getId());
 
