@@ -157,10 +157,12 @@ public class UserController {
         String token = RandomStringUtils.random(8,true,true);
         dynamoService.putItemInTable("email",providedUser.getEmailAddress(),"token", token);
         Message message = new Message();
-        message.setEmail(providedUser.getEmailAddress());
-        message.setToken(token);
         String link = "http://prod.csye6225jinshuang.me/v1/verifyUserEmail?email="+ providedUser.getEmailAddress()+"&token="+token;
+        message.setFirst_name(providedUser.getFirstName());
+        message.setUsername(providedUser.getEmailAddress());
+        message.setOne_time_token(token);
         message.setLink(link);
+        message.setMessage_type("String");
         this.snsUtil.publishSNSMessage(new Gson().toJson(message));
         return userRepository.save(providedUser);
     }
