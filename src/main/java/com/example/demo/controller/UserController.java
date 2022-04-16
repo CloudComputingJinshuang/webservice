@@ -145,12 +145,12 @@ public class UserController {
         logger.info(jsonObject.toString());
         Pattern pattern = Pattern.compile("[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}");
         Matcher mat = pattern.matcher(providedUser.getEmailAddress());
-//        if (!mat.matches()) {
-//            throw new NotValidEmailException();
-//        }
-//        if (userRepository.findByEmailAddress(providedUser.getEmailAddress())!=null) {
-//            throw new EmailExistException();
-//        }
+        if (!mat.matches()) {
+            throw new NotValidEmailException();
+        }
+        if (userRepository.findByEmailAddress(providedUser.getEmailAddress())!=null) {
+            throw new EmailExistException();
+        }
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         providedUser.setPassword(bCryptPasswordEncoder.encode(providedUser.getPassword()));
 
