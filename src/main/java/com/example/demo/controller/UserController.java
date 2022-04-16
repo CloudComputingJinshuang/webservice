@@ -168,6 +168,7 @@ public class UserController {
     }
 
     @GetMapping(value = "/v1/verifyUserEmail")
+    @ResponseBody
     public void verifyUser(@RequestParam String email,
                            @RequestParam String token){
         User userData = userRepository.findByEmailAddress(email);
