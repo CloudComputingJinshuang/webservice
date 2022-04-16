@@ -1,14 +1,9 @@
-package com.example.demo.controller;
+package com.example.demo;
 
 import com.amazonaws.util.EC2MetadataUtils;
-import com.example.demo.AWSS3Service;
-import com.example.demo.Image;
-import com.example.demo.User;
-import com.example.demo.exception.NotValidEmailException;
 import com.example.demo.exception.NotVerifyException;
 import com.example.demo.repository.ImageRepository;
 import com.example.demo.repository.UserRepository;
-import com.timgroup.statsd.NonBlockingStatsDClient;
 import com.timgroup.statsd.StatsDClient;
 import org.joda.time.DateTime;
 import org.json.JSONObject;

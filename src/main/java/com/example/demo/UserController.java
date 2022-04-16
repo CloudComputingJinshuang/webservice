@@ -1,22 +1,11 @@
-package com.example.demo.controller;
+package com.example.demo;
 
-import antlr.Token;
-import com.amazonaws.internal.StaticCredentialsProvider;
-import com.amazonaws.regions.Region;
-import com.amazonaws.regions.Regions;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
-import com.amazonaws.services.dynamodbv2.document.DynamoDB;
-import com.amazonaws.services.dynamodbv2.document.Item;
-import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.util.EC2MetadataUtils;
-import com.example.demo.*;
 import com.example.demo.exception.EmailExistException;
 import com.example.demo.exception.NotValidEmailException;
 import com.example.demo.exception.NotVerifyException;
 import com.example.demo.repository.UserRepository;
 import com.google.gson.Gson;
-import com.timgroup.statsd.NonBlockingStatsDClient;
 import com.timgroup.statsd.StatsDClient;
 import org.apache.commons.lang.RandomStringUtils;
 import org.joda.time.DateTime;
@@ -33,8 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -172,7 +160,7 @@ public class UserController {
     public void verifyUser(@RequestParam String email,
                            @RequestParam String token){
         User userData = userRepository.findByEmailAddress(email);
-        HashMap<String,AttributeValue> queryItem = (HashMap<String, AttributeValue>) dynamoService.getDynamoDBItem("email",email);
+        Map<String,AttributeValue> queryItem = dynamoService.getDynamoDBItem("email",email);
         if (queryItem==null) return;
         userData.setVerified(true);
         userRepository.save(userData);
