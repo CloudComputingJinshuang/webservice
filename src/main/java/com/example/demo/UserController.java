@@ -160,7 +160,7 @@ public class UserController {
     public void verifyUser(@RequestParam String email,
                            @RequestParam String token){
         User userData = userRepository.findByEmailAddress(email);
-        Map<String,AttributeValue> queryItem = (Map<String, AttributeValue>) dynamoService.getDynamoDBItem("email",email);
+        Map<String,AttributeValue> queryItem = dynamoService.getDynamoDBItem("email",email);
         if (queryItem==null) return;
         userData.setVerified(true);
         userRepository.save(userData);
