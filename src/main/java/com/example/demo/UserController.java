@@ -109,7 +109,6 @@ public class UserController {
         getSelf.setAccount_created(userData.getAccount_created());
         getSelf.setAccount_updated(userData.getAccount_updated());
         return getSelf;
-//        return userData;
     }
 
     @PostMapping("/v1/user")
@@ -168,7 +167,7 @@ public class UserController {
         }
         userData.setVerified(true);
         userRepository.save(userData);
-        return new ResponseEntity(String.format("Account Verified"),HttpStatus.OK);
+        return new ResponseEntity(String.format("Your account is verified"),HttpStatus.OK);
 
     }
 
