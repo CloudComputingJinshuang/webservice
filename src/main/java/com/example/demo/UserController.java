@@ -146,7 +146,7 @@ public class UserController {
         String token = RandomStringUtils.random(8,true,true);
         dynamoService.putItemInTable("email",providedUser.getEmailAddress(),"token", token);
         Message message = new Message();
-        String link = "http://prod.csye6225jinshuang.me/v1/verifyUserEmail?email="+ providedUser.getEmailAddress()+"&token="+token;
+        String link = "https://prod.csye6225jinshuang.me/v1/verifyUserEmail?email="+ providedUser.getEmailAddress()+"&token="+token;
         message.setFirst_name(providedUser.getFirstName());
         message.setUsername(providedUser.getEmailAddress());
         message.setOne_time_token(token);
