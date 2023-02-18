@@ -14,6 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -107,7 +109,6 @@ public class UserController {
         getSelf.setAccount_created(userData.getAccount_created());
         getSelf.setAccount_updated(userData.getAccount_updated());
         return getSelf;
-//        return userData;
     }
 
     @PostMapping("/v1/user")
@@ -145,7 +146,7 @@ public class UserController {
         String token = RandomStringUtils.random(8,true,true);
         dynamoService.putItemInTable("email",providedUser.getEmailAddress(),"token", token);
         Message message = new Message();
-        String link = "http://prod.csye6225jinshuang.me/v1/verifyUserEmail?email="+ providedUser.getEmailAddress()+"&token="+token;
+        String link = "https://prod.csye6225jinshuang.me/v1/verifyUserEmail?email="+ providedUser.getEmailAddress()+"&token="+token;
         message.setFirst_name(providedUser.getFirstName());
         message.setUsername(providedUser.getEmailAddress());
         message.setOne_time_token(token);
@@ -157,13 +158,17 @@ public class UserController {
 
     @GetMapping(value = "/v1/verifyUserEmail")
     @ResponseBody
-    public void verifyUser(@RequestParam String email,
-                           @RequestParam String token){
+    public ResponseEntity verifyUser(@RequestParam String email,
+                                     @RequestParam String token){
         User userData = userRepository.findByEmailAddress(email);
         Map<String,AttributeValue> queryItem = dynamoService.getDynamoDBItem("email",email);
-        if (queryItem==null) return;
+        if (queryItem.size()==0) {
+            return new ResponseEntity(String.format("Not in dynamo"), HttpStatus.NOT_FOUND);
+        }
         userData.setVerified(true);
         userRepository.save(userData);
+        return new ResponseEntity(String.format("Your account is verified"),HttpStatus.OK);
+
     }
 
     @PutMapping("/v2/user/self")
